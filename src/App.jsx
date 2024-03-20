@@ -1,8 +1,8 @@
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import Todo from "./components/Todo";
-import { useState } from "react";
 import { nanoid } from "nanoid";
+import { useState, useRef, useEffect } from "react";
 
 
 //Note: We are defining these constants outside our App() function 
@@ -16,6 +16,13 @@ const FILTER_MAP = {
 };
 const FILTER_NAMES = Object.keys(FILTER_MAP);
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
@@ -60,6 +67,18 @@ function App(props) {
   }
   
   
+  // const taskList = tasks?.map((task) => (
+  //   <Todo
+  //     id={task.id}
+  //     name={task.name}
+  //     completed={task.completed}
+  //     key={task.id}
+  //     toggleTaskCompleted={toggleTaskCompleted}
+  //     deleteTask={deleteTask}
+  //     editTask={editTask}
+  //   />
+  // ));
+
   const taskList = tasks
   .filter(FILTER_MAP[filter])
   .map((task) => (
@@ -104,9 +123,22 @@ function App(props) {
   const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${tasksNoun} remaining`;
 
+
+  const listHeadingRef = useRef(null);
+  const prevTaskLength = usePrevious(tasks.length);
+
+  useEffect(() => {
+    if (tasks.length < prevTaskLength) {
+      listHeadingRef.current.focus();
+    }
+  }, [tasks.length, prevTaskLength]);
+  
+
+
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
+
       {/* <Form onSubmit={addTask}/> */}
       <Form addTask={addTask}/>
       <div className="filters btn-group stack-exception">
@@ -115,7 +147,7 @@ function App(props) {
         <FilterButton /> */}
         {filterList}
       </div>
-      <h2 id="list-heading">{headingText}</h2>
+      <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>{headingText}</h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
