@@ -5,10 +5,6 @@ import { nanoid } from "nanoid";
 import { useState, useRef, useEffect } from "react";
 
 
-//Note: We are defining these constants outside our App() function 
-//because if they were defined inside it, they would be recalculated every time the <App /> component re-renders, 
-//and we don't want that. This information will never change no matter what our application does.
-
 const FILTER_MAP = {
   All: () => true,
   Active: (task) => !task.completed,
@@ -27,19 +23,6 @@ function usePrevious(value) {
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
   const [filter, setFilter] = useState("All");
-
-
-  // function addTask(name) {
-  //   alert(name);
-  // }
-
-  // function toggleTaskCompleted(id) {
-  //   //console.log(tasks[0]);
-  // }
-
-  // function deleteTask(id) {
-  //   console.log(id);
-  // }
 
   function editTask(id, newName) {
     const editedTaskList = tasks.map((task) => {
@@ -66,19 +49,6 @@ function App(props) {
     setTasks([...tasks, newTask]);
   }
   
-  
-  // const taskList = tasks?.map((task) => (
-  //   <Todo
-  //     id={task.id}
-  //     name={task.name}
-  //     completed={task.completed}
-  //     key={task.id}
-  //     toggleTaskCompleted={toggleTaskCompleted}
-  //     deleteTask={deleteTask}
-  //     editTask={editTask}
-  //   />
-  // ));
-
   const taskList = tasks
   .filter(FILTER_MAP[filter])
   .map((task) => (

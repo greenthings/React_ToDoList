@@ -20,12 +20,6 @@ function Todo(props) {
   const wasEditing = usePrevious(isEditing);
   console.log(wasEditing);
 
-
-
-  //console.log(editButtonRef.current);
-
-
-
   function handleChange(e) {
     setNewName(e.target.value);
   }
@@ -102,21 +96,6 @@ function Todo(props) {
     </div>
   );
 
-  // useEffect(() => {
-  //   if (isEditing) {
-  //     editFieldRef.current.focus();
-  //   } else {
-  //     editButtonRef.current.focus();
-  //   }
-  // }, [isEditing]);
-  
-  // pesudo code
-  // if (wasNotEditingBefore && isEditingNow) {
-  //   focusOnEditField();
-  // } else if (wasEditingBefore && isNotEditingNow) {
-  //   focusOnEditButton();
-  // }
-
   useEffect(() => {
     if (!wasEditing && isEditing) {
       editFieldRef.current.focus();
@@ -125,8 +104,6 @@ function Todo(props) {
     }
   }, [wasEditing, isEditing]);
   
-
-  //console.log("main render");
 
   return <li className="todo">{isEditing ? editingTemplate : viewTemplate}</li>;
 }
