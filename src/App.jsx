@@ -1,9 +1,9 @@
+import { useState, useRef, useEffect, useReducer } from "react";
+
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import Todo from "./components/Todo";
-import { nanoid } from "nanoid";
-import { useState, useRef, useEffect } from "react";
-
+import tasksReducer from './reducers/tasksReducer.js'
 
 const FILTER_MAP = {
   All: () => true,
@@ -21,32 +21,40 @@ function usePrevious(value) {
 }
 
 function App(props) {
-  const [tasks, setTasks] = useState(props.tasks);
+  const [tasks, dispatch] = useReducer(tasksReducer, props.tasks);
   const [filter, setFilter] = useState("All");
 
+  // Task Actions
   function editTask(id, newName) {
-    const editedTaskList = tasks.map((task) => {
-      // if this task has the same ID as the edited task
-      if (id === task.id) {
-        // Copy the task and update its name
-        return { ...task, name: newName };
-      }
-      // Return the original task if it's not the edited task
-      return task;
-    });
-    setTasks(editedTaskList);
+    dispatch({
+      type: 'edited',
+      id,
+      newName,
+    }); 
   }
   
-  
   function deleteTask(id) {
-    const remainingTasks = tasks.filter((task) => id !== task.id);
-    setTasks(remainingTasks);
+    dispatch({
+      type: 'deleted',
+      id,
+    });  
   }
   
 
   function addTask(name) {
-    const newTask = { id:  `todo-${nanoid()}`, name, completed: false };
-    setTasks([...tasks, newTask]);
+    dispatch({
+      type: 'added',
+      name,
+    });
+  }
+
+    
+
+  function toggleTaskCompleted(id) {
+    dispatch({
+      type: 'toggled',
+      id,
+    });
   }
   
   const taskList = tasks
@@ -72,23 +80,6 @@ function App(props) {
       setFilter={setFilter}
     />
   ));
-  
-  
-
-  function toggleTaskCompleted(id) {
-    const updatedTasks = tasks.map((task) => {
-      // if this task has the same ID as the edited task
-      if (id === task.id) {
-        // use object spread to make a new object
-        // whose `completed` prop has been inverted
-        return { ...task, completed: !task.completed };
-      }
-      return task;
-    });
-    console.log(updatedTasks);
-    // new array in order to update our state.
-    setTasks(updatedTasks);
-  }
 
   const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${tasksNoun} remaining`;
